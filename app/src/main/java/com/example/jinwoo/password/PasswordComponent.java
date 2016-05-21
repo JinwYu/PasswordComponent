@@ -16,7 +16,7 @@ import android.widget.TextView;
  * calculated can be changed by writing a new class called "PasswordStrength". In that class the
  * user must declare an int variable called "maxStrengthLevel" that represents the strength of the
  * password. This variable is used when calculating the percentage that is used for updating the
- * progress bar. Create new instances of the component in the file "content_main.xml".
+ * progress bar.
  */
 public class PasswordComponent extends LinearLayout {
 

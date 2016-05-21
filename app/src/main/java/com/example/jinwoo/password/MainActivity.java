@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -16,11 +18,20 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_main);
+        LinearLayout linearLayout = new LinearLayout(this);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        PasswordComponent passwordComponent1 = new PasswordComponent(this);
+//        PasswordComponent passwordComponent2 = new PasswordComponent(this);
+//        PasswordComponent passwordComponent3 = new PasswordComponent(this);
+        linearLayout.addView(passwordComponent1);
+//        linearLayout.addView(passwordComponent2);
+//        linearLayout.addView(passwordComponent3);
 
+        setContentView(linearLayout);
+
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
     }
 
     @Override
