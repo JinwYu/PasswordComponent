@@ -12,11 +12,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 /**
  * PasswordComponent is a class that makes a password component that shows a progress bar that
- * shows the password strength by growing and changing color. The way the password strength is
- * calculated can be changed by writing a new class called "PasswordStrength". In that class the
- * user must declare an int variable called "maxStrengthLevel" that represents the strength of the
- * password. This variable is used when calculating the percentage that is used for updating the
- * progress bar.
+ * shows the password strength by growing and changing color of the progress bar. The way the
+ * password strength is calculated can be changed by writing a new class called "PasswordStrength".
+ * In that class the user must declare an int variable called "maxStrengthLevel" that represents
+ * the max strength a password can have. This variable is used when calculating the percentage
+ * that is used for updating the progress bar.
+ *
+ * @author Jinwoo Yu
+ * @version 2016.05.19
  */
 public class PasswordComponent extends LinearLayout {
 
@@ -41,7 +44,11 @@ public class PasswordComponent extends LinearLayout {
         init(attrs, defStyle);
     }
 
-    // Initialize the variables.
+    /**
+     * Create the password component.
+     * @param attributeSet
+     * @param defStyle
+     */
     private void init(AttributeSet attributeSet, int defStyle){
 
         // Layoutinflater makes so everything in the xml-file "password_layout.xml" is available here.
