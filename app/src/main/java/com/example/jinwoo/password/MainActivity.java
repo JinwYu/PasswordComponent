@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 public class MainActivity extends AppCompatActivity {
+    public String password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +28,14 @@ public class MainActivity extends AppCompatActivity {
         linearLayout.addView(passwordComponent1);
 //        linearLayout.addView(passwordComponent2);
 //        linearLayout.addView(passwordComponent3);
+
+        passwordComponent1.setPasswordComponentListener(new PasswordComponent.PasswordComponentListener() {
+            @Override
+            public void onPasswordSaved(String thePassword) {
+                password = thePassword;
+                System.out.println("password = " + password);
+            }
+        });
 
         setContentView(linearLayout);
 

@@ -6,6 +6,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -19,7 +21,7 @@ import android.widget.TextView;
  * that is used for updating the progress bar.
  *
  * @author Jinwoo Yu
- * @version 2016.05.19
+ * @version 2016.06.08
  */
 public class PasswordComponent extends LinearLayout {
 
@@ -27,6 +29,9 @@ public class PasswordComponent extends LinearLayout {
     private ProgressBar progressBar;
     private TextView passMessageField;
     private PasswordStrength passwordStrength;
+    private Button registerButton;
+    private PasswordComponentListener listener;
+    private boolean savePassword = false;
 
     // Contructors.
     public PasswordComponent(Context context) {
@@ -44,12 +49,19 @@ public class PasswordComponent extends LinearLayout {
         init(attrs, defStyle);
     }
 
+    public interface PasswordComponentListener {
+        // When the password can be saved
+        public void onPasswordSaved(String password);
+    }
+
     /**
      * Create the password component.
      * @param attributeSet
      * @param defStyle
      */
     private void init(AttributeSet attributeSet, int defStyle){
+
+        this.listener = null;
 
         // Layoutinflater makes so everything in the xml-file "password_layout.xml" is available here.
         LayoutInflater inflater = (LayoutInflater)
@@ -63,6 +75,7 @@ public class PasswordComponent extends LinearLayout {
         passField = (EditText)findViewById(R.id.editText);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         passMessageField = (TextView) findViewById(R.id.passMessage);
+        registerButton = (Button) findViewById(R.id.button);
 
         // The progress bar is split into 4 parts.
         progressBar.setMax(4);
@@ -70,58 +83,78 @@ public class PasswordComponent extends LinearLayout {
         // A listener for the password field.
         passField.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
+                final String passwordSeguence = s.toString();
+
                 // If the password text field is empty, reset everything.
-                if(s.toString().length() == 0) {
+                if (s.toString().length() == 0) {
                     progressBar.getProgressDrawable().setColorFilter(Color.parseColor("#000000"), android.graphics.PorterDuff.Mode.SRC_ATOP);
                     progressBar.setProgress(0);
                     passMessageField.setText("Please, enter your password.");
                     passMessageField.setTextColor(Color.parseColor("#000000"));
-                }else{
+                    savePassword = false;
+                } else {
 
                     float passStrength = ((float) passwordStrength.calculatePasswordStrength(s.toString()));
-                    float passPercentage = passStrength/passwordStrength.getMaxStrengthLevel();
+                    float passPercentage = passStrength / passwordStrength.getMaxStrengthLevel();
 
                     // Update the progress bar depending on the password strength percentage.
-                    if(passPercentage < 0.20f){
+                    if (passPercentage < 0.20f) {
                         progressBar.setProgress(0);
                         progressBar.getProgressDrawable().setColorFilter(Color.parseColor("#fdc68a"), android.graphics.PorterDuff.Mode.SRC_ATOP);
                         passMessageField.setText("Too short Password");
                         passMessageField.setTextColor(Color.parseColor("#fdc68a"));
-                    }
-                    else if(0.20f <= passPercentage && passPercentage < 0.40f){
+                        savePassword = false;
+                    } else if (0.20f <= passPercentage && passPercentage < 0.40f) {
                         progressBar.setProgress(1);
                         progressBar.getProgressDrawable().setColorFilter(Color.parseColor("#ebf209"), android.graphics.PorterDuff.Mode.SRC_ATOP);
                         passMessageField.setText("Weak Password");
                         passMessageField.setTextColor(Color.parseColor("#ebf209"));
-                    }
-                    else if(0.40f <= passPercentage && passPercentage < 0.60f){
+                        savePassword = false;
+                    } else if (0.40f <= passPercentage && passPercentage < 0.60f) {
                         progressBar.setProgress(2);
                         progressBar.getProgressDrawable().setColorFilter(Color.parseColor("#42b48e"), android.graphics.PorterDuff.Mode.SRC_ATOP);
                         passMessageField.setText("Okay Password");
                         passMessageField.setTextColor(Color.parseColor("#42b48e"));
-                    }
-                    else if(0.60f <= passPercentage && passPercentage < 0.80f){
+                        savePassword = true;
+                    } else if (0.60f <= passPercentage && passPercentage < 0.80f) {
                         progressBar.setProgress(3);
                         progressBar.getProgressDrawable().setColorFilter(Color.parseColor("#b3fe6a"), android.graphics.PorterDuff.Mode.SRC_ATOP);
                         passMessageField.setText("Strong Password");
                         passMessageField.setTextColor(Color.parseColor("#b3fe6a"));
-                    }
-                    else if(0.80f <= passPercentage){
+                        savePassword = true;
+                    } else if (0.80f <= passPercentage) {
                         progressBar.setProgress(4);
                         progressBar.getProgressDrawable().setColorFilter(Color.parseColor("#6ecff6"), android.graphics.PorterDuff.Mode.SRC_ATOP);
                         passMessageField.setText("Very Strong Password");
                         passMessageField.setTextColor(Color.parseColor("#6ecff6"));
+                        savePassword = true;
                     }
                 }
+
+                // Listener for the register button.
+                registerButton.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Fire the listener if the password is strong enough.
+                        if (savePassword && listener != null) {
+                            listener.onPasswordSaved(passwordSeguence);
+                        }
+                    }
+                });
             }
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         });
     }
+
+    // Assign the listener implementing events interface that will receive the events
+    public void setPasswordComponentListener(PasswordComponentListener listener) {this.listener = listener;}
 }
